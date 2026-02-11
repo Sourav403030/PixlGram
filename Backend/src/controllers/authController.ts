@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { registerUserSchema, userModel } from "../models/userModel";
+import { loginSchema, registerUserSchema, userModel } from "../models/userModel";
 import bcrypt from "bcrypt";
 import generateOtp from "../helpers/otp";
+import jwt from "jsonwebtoken"
 
 export async function registerUserController(req: Request, res: Response) {
   const { username, email, password, profileImage, bio } = req.body;
@@ -40,10 +41,10 @@ export async function registerUserController(req: Request, res: Response) {
   return res.status(201).json({
     message: "User registered successfully",
     user: {
-        username,
-        email,
-        profileImage,
-        bio
+        username: newUser.username,
+        email: newUser.email,
+        profileImage: newUser.profileImage,
+        bio: newUser.bio
     }
   })
 
@@ -72,4 +73,62 @@ export async function verifyController(req: Request, res: Response){
     message: "User verified successfully",
   })
   
+}
+
+export async function loginController(req: Request, res: Response){
+  const {username, email, password} = req.body
+
+  const result = loginSchema.safeParse(req.body);
+
+  if(!result.success){
+    return res.status(400).json({
+      message: "Required fields need to be filled",
+    })
+  }
+
+  const user = await userModel.findOne({$or:[{username}, {email}]});
+
+  if(!user){
+    return res.status(409).json({
+      message: "User not found"
+    })
+  }
+
+  if(user.isVerified == false){
+    return res.status(401).json({
+      message: "User not verified"
+    })
+  }
+
+  const comparePassword = await bcrypt.compare(password, user.password);
+
+  if(!comparePassword){
+    return res.status(401).json({
+      message: "Invalid credentials",
+    })
+  }
+
+  const JWT_SECRET = process.env.JWT_SECRET;
+
+  if(!JWT_SECRET){
+    return res.status(400).json({
+      message: "JWT secret required"
+    })
+  }
+
+  const token = jwt.sign({id: user._id}, JWT_SECRET, {expiresIn: "1d"})
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    sameSite: true,
+  })
+
+  res.status(200).json({
+    message: "User LoggedIn successfully",
+    user:{
+      email: user.email,
+      username: user.username
+    }
+  })
+
 }
