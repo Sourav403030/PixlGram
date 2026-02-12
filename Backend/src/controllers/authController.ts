@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { loginSchema, registerUserSchema, userModel } from "../models/userModel";
 import bcrypt from "bcrypt";
-import generateOtp from "../helpers/otp";
+import generateOtp from "../services/otpService";
 import jwt from "jsonwebtoken"
 
 export async function registerUserController(req: Request, res: Response) {
