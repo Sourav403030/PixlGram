@@ -1,5 +1,8 @@
 import { Request , Response } from "express";
 import uploadFileToImageKit from "../services/imageKitService";
+import jwt from "jsonwebtoken";
+import { postModel } from "../models/postModel";
+import mongoose from "mongoose";
 
 export async function createPostController(req: Request, res: Response){
     if(!req.file || !req.body){
@@ -7,9 +10,39 @@ export async function createPostController(req: Request, res: Response){
             message: "File and Caption is required",
         })
     }
-    const uploadResponse = await uploadFileToImageKit(req.file.buffer, req.file.originalname)
 
-    res.status(201).json({
-        message: "Image uploaded to ImageKit"
+    const token = req.cookies.token;
+
+    if(!token){
+        return res.status(401).json({
+            message: "Token not found, Unauthorized access"
+        })
+    }
+
+    const JWT_SECRET = process.env.JWT_SECRET;
+    
+    if(!JWT_SECRET){
+        return res.status(400).json({
+            message: "JWT secret is required",
+        })
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload & { id: string };
+
+    const uploadResponse = await uploadFileToImageKit(req.file.buffer, req.file.originalname);
+
+    const newPost = await postModel.create({
+        caption: req.body.caption,
+        imgUrl: uploadResponse.url,
+        userId: decoded.id
+    } as any)
+
+    return res.status(201).json({
+        message: "New post created successfully",
+        newPost
     })
+
+    
+
+    
 }

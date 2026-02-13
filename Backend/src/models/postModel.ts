@@ -28,4 +28,4 @@ export const postCreationSchema: z.ZodObject = z.object({
 
 }) 
 
-const postModel = mongoose.model("posts", postSchema);
+export const postModel = mongoose.model("posts", postSchema);
