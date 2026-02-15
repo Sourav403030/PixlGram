@@ -82,3 +82,57 @@ export async function getPostController(req: Request, res: Response){
     })
 
 }
+
+export async function getPostDetailsController(req: Request, res: Response){
+    const token = req.cookies.token;
+
+    if(!token){
+        return res.status(401).json({
+            message: "Unauthorized access"
+        })
+    }
+
+    const JWT_SECRET = process.env.JWT_SECRET;
+    
+    if(!JWT_SECRET){
+        return res.status(400).json({
+            message: "JWT secret is required",
+        })
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+
+    if(!decoded){
+        return res.status(401).json({
+            message: "Unauthorized access"
+        })
+    }
+
+    const userId = decoded.id;
+    const postId = req.params.postId;
+
+    const post = await postModel.findById(postId);
+
+    if(!post){
+        return res.status(404).json({
+            message: "No posts found"
+        })
+    }
+
+    const isValidUserAccessingPost = post?.userId.toString() === userId;
+
+    if(!isValidUserAccessingPost){
+        return res.status(403).json({
+            message: "Forbidden content"
+        })
+    }
+
+    return res.status(200).json({
+        message: "Post fetched successfully",
+        post
+    })
+
+
+
+
+}
