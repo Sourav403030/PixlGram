@@ -45,3 +45,34 @@ export async function followUserController(req: Request, res: Response){
     })
 
 }
+
+export async function unfollowUserController(req: Request, res: Response){
+    const unfollowUser = Array.isArray(req.params.username) ? req.params.username[0] : req.params.username;
+    const user = req.user?.username;
+
+    if(unfollowUser == user){
+        return res.status(400).json({
+            message: "You cannot unfollow yourself"
+        })
+    }
+
+    if(!unfollowUser){
+        return res.status(400).json({
+            message: "username to be unfollowed is required"
+        })
+    }
+
+    const isFollowAlreadyExists = await followModel.findOne({follower: user, followee: unfollowUser});
+
+    if(!isFollowAlreadyExists){
+        return res.status(400).json({
+            message: `You are not following ${unfollowUser}`
+        })
+    }
+
+    await followModel.findOneAndDelete({follower: user, followee: unfollowUser});
+
+    res.status(201).json({
+        message: `You unfollowed ${unfollowUser} successfully`
+    })
+}
