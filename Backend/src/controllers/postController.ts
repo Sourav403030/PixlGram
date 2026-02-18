@@ -2,6 +2,7 @@ import { Request , Response } from "express";
 import uploadFileToImageKit from "../services/imageKitService";
 import jwt from "jsonwebtoken";
 import { postModel } from "../models/postModel";
+import { likeModel } from "../models/likeModel";
 
 export async function createPostController(req: Request, res: Response){
     if(!req.file || !req.body){
@@ -62,5 +63,42 @@ export async function getPostDetailsController(req: Request, res: Response){
     return res.status(200).json({
         message: "Post fetched successfully",
         post
+    })
+}
+
+export async function likePostController(req: Request, res: Response){
+    const user = req.user?.username;
+    const postId = Array.isArray(req.params.postId) ? req.params.postId[0] : req.params.postId;
+
+    if(!postId || !user){
+        return res.status(400).json({
+            message: "Post ID and user is required"
+        })
+    }
+
+    const isPostExists = await postModel.findById(postId);
+
+    if(!isPostExists){
+        return res.status(400).json({
+            message: "The post you are trying to like doesnot exist"
+        })
+    }
+
+    const isUserAlreadyLikedPost = await likeModel.findOne({post: postId, user: user} as any);
+
+    if(isUserAlreadyLikedPost){
+        return res.status(400).json({
+            message: "You cannot like a post more than once"
+        })
+    }
+
+    const like = await likeModel.create({
+        post: postId,
+        user: user
+    } as any)
+
+    res.status(201).json({
+        message: "You liked the post",
+        like
     })
 }
