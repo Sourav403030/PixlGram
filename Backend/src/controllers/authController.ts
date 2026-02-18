@@ -116,7 +116,7 @@ export async function loginController(req: Request, res: Response){
     })
   }
 
-  const token = jwt.sign({id: user._id}, JWT_SECRET, {expiresIn: "1d"})
+  const token = jwt.sign({id: user._id, username: user.username}, JWT_SECRET, {expiresIn: "1d"})
 
   res.cookie("token", token, {
     httpOnly: true,

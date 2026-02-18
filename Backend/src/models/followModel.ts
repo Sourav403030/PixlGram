@@ -1,20 +1,16 @@
 import mongoose from "mongoose";
 
 interface followModelInterface{
-    follower: mongoose.Schema.Types.ObjectId
-    followee: mongoose.Schema.Types.ObjectId
+    follower: string
+    followee: string
 }
 
 const followSchema = new mongoose.Schema<followModelInterface>({
     follower: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
-        required: [true, "follower is required"],
+        type: String,
     },
     followee:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
-        required: [true, "followee is required"],
+        type: String,
     }
 }, {timestamps: true})
 

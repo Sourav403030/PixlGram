@@ -19,7 +19,8 @@ export default async function authMiddleware(req: Request, res: Response, next: 
   }
 
   const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload & {
-    id: string;
+    id: string,
+    username: string,
   };
 
   if (!decoded) {
