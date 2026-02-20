@@ -4,5 +4,5 @@ import { loginController, registerUserController, verifyController } from "../co
 export const authRouter = express.Router();
 
 authRouter.post("/register", registerUserController);
-authRouter.post("/verify", verifyController);
+authRouter.post("/verify/:email", verifyController);
 authRouter.post("/login", loginController);

@@ -1,9 +1,9 @@
-import Login from './features/auth/pages/Login'
+import AppRoutes from './AppRoutes'
 
 const App = () => {
   return (
     <div>
-      <Login/>
+      <AppRoutes/>
     </div>
   )
 }

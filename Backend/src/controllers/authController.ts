@@ -51,7 +51,8 @@ export async function registerUserController(req: Request, res: Response) {
 }
 
 export async function verifyController(req: Request, res: Response){
-  const {email, otp} = req.body
+  const {otp} = req.body
+  const email = req.params.email;
 
   const user = await userModel.findOne({email})
 

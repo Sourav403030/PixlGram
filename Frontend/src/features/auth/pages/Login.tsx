@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { AxiosResponse } from "axios";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Login = () => {
       const [email, setEmail] = useState<string>("");
@@ -57,6 +58,7 @@ const Login = () => {
           <button className="px-2 py-3 bg-white text-black text-sm rounded-2xl cursor-pointer">
             LogIn
           </button>
+          <p className="text-gray-400 text-sm">Doesn't have an Account? <span className="underline"><Link to={"/register"}>Register</Link></span></p>
           {hasSubmitted && (
             authResponse?.status === 200 ? 
               <p className="text-green-600 text-sm">Logged In Successfully</p> : 

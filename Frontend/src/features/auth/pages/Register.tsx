@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import type { AxiosResponse } from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [username, setUsername] = useState<string>("");
@@ -8,6 +9,7 @@ const Register = () => {
   const [password, setPassword] = useState<string>("");
   const [authResponse, setAuthResponse] = useState<AxiosResponse | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,12 +23,16 @@ const Register = () => {
       },{withCredentials: true});
 
       setAuthResponse(response);
+      console.log(response);
       setEmail("");
       setPassword("");
       setUsername("");
+      navigate(`/verify/${response.data.user.email}`);
     } catch {
       setAuthResponse(null);
     }
+
+    
   };
 
   return (
@@ -64,9 +70,10 @@ const Register = () => {
           <button className="px-2 py-3 bg-white text-black text-sm rounded-2xl cursor-pointer">
             Register
           </button>
+          <p className="text-gray-400 text-sm">Already have an Account? <span className="underline"><Link to={"/login"}>Login</Link></span></p>
           {hasSubmitted && (
             authResponse?.status === 201 ? 
-              <p className="text-green-600 text-sm">Registered Successfully</p> : 
+              <p className="text-green-600 text-sm">Registered Successfully. Now please Log In with your Email</p> : 
               <p className="text-red-500 text-sm">Sorry, Error in registering your account</p>
           )}
         </form>
