@@ -1,9 +1,12 @@
 import AppRoutes from './AppRoutes'
+import AuthProvider  from './features/auth/store/AuthContext'
 
 const App = () => {
   return (
     <div>
-      <AppRoutes/>
+      <AuthProvider>
+        <AppRoutes/>
+      </AuthProvider>
     </div>
   )
 }
