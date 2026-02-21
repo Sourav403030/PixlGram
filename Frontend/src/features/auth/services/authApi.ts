@@ -35,3 +35,12 @@ export async function loginUser(email: string, password: string) {
     console.log(error);
   }
 }
+
+export async function getMeUser(){
+    try {
+        const response = await api.get("/get-me");
+        return response.data
+    } catch (error) {
+        console.log(error);
+    }
+}

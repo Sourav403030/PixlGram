@@ -1,19 +1,25 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Register = () => {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
+  const { handleRegister, loading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    navigate(`/verify/${email}`);
+    await handleRegister(username, email, password);
 
-    
+    navigate(`/verify/${email}`);
   };
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
 
   return (
     <div className="text-white flex items-center justify-center h-screen w-full">
@@ -50,7 +56,12 @@ const Register = () => {
           <button className="px-2 py-3 bg-white text-black text-sm rounded-2xl cursor-pointer">
             Register
           </button>
-          <p className="text-gray-400 text-sm">Already have an Account? <span className="underline"><Link to={"/login"}>Login</Link></span></p>
+          <p className="text-gray-400 text-sm">
+            Already have an Account?{" "}
+            <span className="underline">
+              <Link to={"/login"}>Login</Link>
+            </span>
+          </p>
         </form>
       </div>
     </div>

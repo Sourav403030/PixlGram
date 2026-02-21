@@ -1,35 +1,24 @@
-import axios from "axios";
-import type { AxiosResponse } from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [authResponse, setAuthResponse] = useState<AxiosResponse | null>(null);
-  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
+  const { handleLogin, loading } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setHasSubmitted(true);
 
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
-        {
-          email,
-          password,
-        },
-        { withCredentials: true }
-      );
+    await handleLogin(email, password);
 
-      setAuthResponse(response);
-      setEmail("");
-      setPassword("");
-    } catch {
-      setAuthResponse(null);
-    }
+    navigate("/");
   };
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
 
   return (
     <div>
@@ -64,14 +53,6 @@ const Login = () => {
                 <Link to={"/register"}>Register</Link>
               </span>
             </p>
-            {hasSubmitted &&
-              (authResponse?.status === 200 ? (
-                <p className="text-green-600 text-sm">Logged In Successfully</p>
-              ) : (
-                <p className="text-red-500 text-sm">
-                  Sorry, Error in Logging In your account
-                </p>
-              ))}
           </form>
         </div>
       </div>
