@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./features/auth/pages/Login";
 import Register from "./features/auth/pages/Register";
 import Verify from "./features/auth/pages/Verify";
+import Feed from "./features/post/pages/Feed";
 
 const AppRoutes = () => {
   return (
@@ -11,6 +12,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register/>} />
         <Route path="/verify/:email" element={<Verify/>} />
+        <Route path="/feed" element={<Feed/>} />
 
       </Routes>
     </BrowserRouter>
